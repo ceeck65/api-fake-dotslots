@@ -118,8 +118,7 @@ app.get("/balance/player/:id", (req, res, next) => {
             return;
         }
         res.json({
-            "message":"success",
-            "data":rows
+            "result":rows
         })
     });
 });
