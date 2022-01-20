@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 
 // Server port
-let HTTP_PORT = 3000;
+let HTTP_PORT = process.env.PORT;
 // Start server
 app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
