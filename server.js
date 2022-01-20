@@ -17,12 +17,12 @@ app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
 });
 // Root endpoint
-app.get("/api/v1", (req, res, next) => {
+app.get("/", (req, res, next) => {
     res.json({"message":"API V1 - Fake API"})
 });
 
 
-app.get("/api/v1/users", (req, res, next) => {
+app.get("/users", (req, res, next) => {
     let sql = "select * from user";
     let params = [];
     db.all(sql, params, (err, rows) => {
@@ -38,7 +38,7 @@ app.get("/api/v1/users", (req, res, next) => {
 });
 
 
-app.get("/api/v1/user/:id", (req, res, next) => {
+app.get("/user/:id", (req, res, next) => {
     let sql = "select * from user where id = ?";
     let params = [req.params.id];
     db.get(sql, params, (err, row) => {
@@ -55,7 +55,7 @@ app.get("/api/v1/user/:id", (req, res, next) => {
 
 
 
-app.post("/api/v1/user/", (req, res, next) => {
+app.post("/user/", (req, res, next) => {
     let errors = [];
     if (!req.body.password){
         errors.push("No password specified");
@@ -92,7 +92,7 @@ app.post("/api/v1/user/", (req, res, next) => {
 // PLAYERS
 
 
-app.get("/api/v1/players", (req, res, next) => {
+app.get("/players", (req, res, next) => {
     let sql = "select * from players";
     let params = [];
     db.all(sql, params, (err, rows) => {
@@ -109,7 +109,7 @@ app.get("/api/v1/players", (req, res, next) => {
 
 
 
-app.get("/api/v1/balance/player/:id", (req, res, next) => {
+app.get("/balance/player/:id", (req, res, next) => {
     let sql = "select balance from  wallet where player_id = ? ORDER BY id DESC LIMIT 1";
     let params = [req.params.id];
     db.all(sql, params, (err, rows) => {
