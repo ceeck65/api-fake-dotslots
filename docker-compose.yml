@@ -1,0 +1,22 @@
+version: '2'
+
+networks:
+    webapp02:
+        external:
+            name: dfg-slots-games_webapp01
+
+services:
+    nodejs:
+        container_name: api_fake
+        build:
+            dockerfile: Dockerfile
+            context: .
+            args:
+                - NODE_ENV=local
+        volumes:
+            - .:/var/www/html
+        env_file: .env
+        ports:
+            - "3000:3000"
+        networks:
+            - webapp02
