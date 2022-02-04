@@ -144,7 +144,7 @@ function getBalance(player_id) {
 
 app.post("/withdrawAndDeposit", async (req, res, next) => {
 
-    let player_id = req.body.player_id;
+    let player_id = req.body.playerId;
     let type_operation = req.body.type_operation;
     let balance;
     let balanceNew;
