@@ -182,6 +182,29 @@ app.post("/withdrawAndDeposit", async (req, res, next) => {
     }
 });
 
+
+app.post("/auth/player", async (req, res, next) => {
+
+    res.json({
+        "status": 200,
+        "message": "success",
+        "response": {
+            "user": {
+                "user_id": 1,
+                "username": "test",
+                "country": "US"
+              },
+              "wallet": {
+                "amount": 100.00,
+                "currency": "USD"
+              }
+        }
+    })
+    
+});
+
+
+
 app.get("/deposit", (req, res, next) => {
     res.json({"message":"Deposit"})
 });
