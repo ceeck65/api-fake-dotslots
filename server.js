@@ -199,9 +199,12 @@ app.post("/withdrawAndDeposit", async (req, res, next) => {
 
     let player_id = req.body.playerId;
     let type_operation = req.body.type_operation;
+    let bet = req.body.bet;
     let balance;
     let balanceNew;
     balance = await getBalance(player_id);
+
+    balance = (parseFloat(balance) - parseFloat(bet));
 
     if (parseInt(type_operation) === CREDIT) {
         balanceNew = (parseFloat(balance) + parseFloat(req.body.amount)).toFixed(1);
