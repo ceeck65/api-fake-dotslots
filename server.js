@@ -15,7 +15,7 @@ const DEBIT = 2;
 
 // Server port
 let HTTP_PORT = process.env.PORT;
-// let HTTP_PORT = 3000;
+// let HTTP_PORT = 3005;
 // Start server
 app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
@@ -112,6 +112,39 @@ app.get("/players", (req, res, next) => {
 });
 
 
+app.post("/players/", (req, res, next) => {
+    let errors = [];
+    if (!req.body.user_name){
+        errors.push("No username specified");
+    }
+    if (!req.body.user_id){
+        errors.push("No user id specified");
+    }
+    if (errors.length){
+        res.status(400).json({"error":errors.join(",")});
+        return;
+    }
+    const data = {
+        user_name: req.body.user_name,
+        user_id: req.body.user_id
+    };
+    const sql = 'INSERT INTO players (user_name, user_id) VALUES (?,?)';
+    const params = [data.user_name, data.user_id];
+    db.run(sql, params, function (err, result) {
+        if (err){
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "data": data,
+            "id" : this.lastID
+        })
+    });
+})
+
+
+
 
 app.get("/balance/player", (req, res, next) => {
     let playerId = req.query.playerId;
@@ -135,8 +168,28 @@ function getBalance(player_id) {
         db.get(sql, player_id, (err, row) => {
             if (err) {
                 return console.error(err.message);
+            } else {
+                if(typeof row == 'undefined') {
+                    const data = {
+                        player_id: player_id,
+                        balance: 0,
+                        amount: 0,
+                        transaction_type: 0
+                    };
+                    const sql = 'INSERT INTO wallet (player_id, balance, amount, transaction_type) VALUES (?,?,?,?)';
+                    const params = [data.player_id, data.balance, data.amount, data.transaction_type];
+                    db.run(sql, params, function (err, result) {
+                        if (err){
+                            res.status(400).json({"error": err.message})
+                            return;
+                        }
+                        resolve(data.balance);
+                    });
+                    resolve(data.balance);
+                } else {
+                    resolve(row.balance);
+                }
             }
-            resolve(row.balance);
         });
     })
 }
@@ -160,8 +213,6 @@ app.post("/withdrawAndDeposit", async (req, res, next) => {
 
     balanceNew = parseFloat(balanceNew);
 
-    console.log(balanceNew, balance, type_operation, req.body.amount);
-
     if (!isNaN(balanceNew)) {
         const sql = 'INSERT INTO wallet (player_id, balance, amount, transaction_type) VALUES (?,?,?,?)';
         const params = [player_id, balanceNew, req.body.amount, type_operation];
@@ -174,7 +225,7 @@ app.post("/withdrawAndDeposit", async (req, res, next) => {
                 "status": 200,
                 "message": "success",
                 "response": {
-                    "newBalance": balanceNew,
+                    "balance": balanceNew,
                     "transactionRef": req.body.transaction
                 }
             })
@@ -182,37 +233,41 @@ app.post("/withdrawAndDeposit", async (req, res, next) => {
     }
 });
 
+function getPlayers(player_id) {
+    return new Promise(resolve => {
+        let sql = "select * from  players where id = ? ORDER BY id DESC LIMIT 1";
+        db.get(sql, player_id, (err, row) => {
+            if (err) {
+                return console.error(err.message);
+            } else {
+                resolve(row);
+            }
+        });
+    })
+}
 
 app.post("/auth/player", async (req, res, next) => {
+    let playerId = parseInt(req.body.playerId);
+    let players = await getPlayers(playerId);
+    let balance = await getBalance(playerId);
 
     res.json({
         "status": 200,
         "message": "success",
         "response": {
             "user": {
-                "user_id": 1,
-                "username": "test",
+                "user_id": players.id,
+                "username": players.user_name,
                 "country": "US"
               },
               "wallet": {
-                "amount": 100.00,
+                "balance": balance,
                 "currency": "USD"
               }
         }
     })
-    
+  
 });
-
-
-
-app.get("/deposit", (req, res, next) => {
-    res.json({"message":"Deposit"})
-});
-
-
-
-
-
 
 
 // Insert here other API endpoints

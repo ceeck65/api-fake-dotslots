@@ -31,7 +31,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
 
         db.run(`CREATE TABLE players (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_nane text,
+            user_name text,
             user_id INTEGER
             )`,
             (err) => {

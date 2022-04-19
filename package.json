@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "dev": "lite-server start"
   },
   "author": "Mario Fernandez",
   "license": "ISC",
@@ -14,5 +15,8 @@
     "md5": "^2.3.0",
     "nodemon": "^2.0.15",
     "sqlite3": "^5.0.2"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1"
   }
 }
